@@ -1,0 +1,5 @@
+# List allowed inbound rules
+Get-NetFirewallRule -Direction Inbound | Where-Object { $_.Enabled -eq 'True' -and $_.Action -eq 'Allow' } | Get-NetFirewallPortFilter | Select Name, Protocol, LocalPort
+
+# List allowed outbound rules
+Get-NetFirewallRule -Direction Outbound | Where-Object { $_.Enabled -eq 'True' -and $_.Action -eq 'Allow' } | Get-NetFirewallPortFilter | Select Name, Protocol, RemotePort
