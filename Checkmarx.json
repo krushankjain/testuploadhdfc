@@ -1,0 +1,23 @@
+{
+  "thresholds": {
+    "sast-high": 1,
+    "sast-medium": 1,
+    "sca-low": 1,
+    "sca-medium": 1,
+    "sca-high": 1
+  },
+  "scanSettings": {
+    "projectName": "SampleProject",
+    "branch": "main"
+  },
+  "sast": {
+    "incremental": true
+  },
+  "sca": {
+    "resolverPath": "C:\\ScaResolver\\ScaResolver.exe"
+  },
+  "application": {
+    "id": 560849,
+    "name": "560849"
+  }
+}
