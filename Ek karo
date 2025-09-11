@@ -1,0 +1,10 @@
+--threshold "$(json.threshold)" 
+--scan-types "$(json.scanTypes)" 
+--report-format "$(json.reportFormat)" 
+--output-name "$(json.outputName)" 
+--output-path "$(json.outputPath)" 
+--application-name "$(json.applicationName)" 
+$(json.debug) 
+$(json.scaResolver) 
+$(json.sastResolver) 
+$(json.secretsDetection)
