@@ -1,0 +1,10 @@
+{
+  "threshold": "sast-high=1; sast-medium=1; sast-low=3; sca-high=1; sca-medium=1; sca-low=3",
+  "scanTypes": "sast,sca",
+  "reportFormat": "pdf",
+  "outputName": "Vist_TrackingSystem",
+  "outputPath": "G:\\ScaResolver\\SCaResolver.exe",
+  "applicationName": "APPID_2421138",
+  "debug": true,
+  "scaResolver": true
+}
