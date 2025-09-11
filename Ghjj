@@ -1,0 +1,12 @@
+{
+  "threshold": "sast-high=1; sast-medium=1; sast-low=3; sca-high=1; sca-medium=1; sca-low=3; kics-high=1; kics-medium=1; kics-low=1; api-security-high=1; api-security-medium=1; api-security-low=1",
+  "scanTypes": "sast,sca,kics,api-security",
+  "reportFormat": "pdf",
+  "outputName": "Vist_TrackingSystem",
+  "outputPath": "G:\\ScaResolver\\SCaResolver.exe",
+  "applicationName": "APPID_2359227",
+  "debug": "--debug",
+  "scaResolver": "--sca-resolver",
+  "sastResolver": "--sast-resolver",
+  "secretsDetection": "--enable-secrets-detection"
+}
