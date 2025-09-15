@@ -1,0 +1,9 @@
+- task: Checkmarx.checkmarx-ast-azure-plugin.cx-scan-task.Checkmarx AST@1
+  displayName: 'Checkmarx AST'
+  enabled: false
+  inputs:
+    CheckmarxService: 'Checkmarx_SC'
+    projectName: '$(json.applicationName)'
+    branchName: '$(JIRA_ID)'
+    tenantName: 'bankhdfc'
+    additionalParams: '--threshold "$(json.threshold)" --scan-types "$(json.scanTypes)" --report-format "$(json.reportFormat)"'
