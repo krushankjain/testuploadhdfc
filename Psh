@@ -1,0 +1,79 @@
+# SCRIPT TO AUTOMATE SERVICE CONNECTION KEY UPDATES
+
+# ----------------------------------------------------
+# Step 1: Define Variables
+# ----------------------------------------------------
+
+# Your Azure DevOps organization URL
+$organizationUrl = "https://dev.azure.com/[YourOrganization]"
+# The PAT you generated
+$personalAccessToken = "[YourPersonalAccessToken]"
+# The new key/secret value to update the service connection with
+$newServicePrincipalKey = "[YourNewSecretOrKey]" 
+# The name of the service connection you want to update (if you have a consistent naming convention)
+$serviceConnectionName = "[TheNameOfTheServiceConnection]"
+
+# ----------------------------------------------------
+# Step 2: Prepare Headers and Authorization
+# ----------------------------------------------------
+
+# Encode the PAT for use in the Authorization header
+$base64Pat = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$personalAccessToken"))
+$headers = @{
+    Authorization = "Basic $base64Pat"
+    "Content-Type" = "application/json"
+}
+
+# ----------------------------------------------------
+# Step 3: Get all Projects in the Organization
+# ----------------------------------------------------
+
+$projectsApiUrl = "$organizationUrl/_apis/projects?api-version=7.1-preview.4"
+$projectsResponse = Invoke-RestMethod -Uri $projectsApiUrl -Headers $headers -Method Get
+
+if ($null -eq $projectsResponse.value) {
+    Write-Host "No projects found."
+    return
+}
+
+# ----------------------------------------------------
+# Step 4: Loop through each project to find and update the service connection
+# ----------------------------------------------------
+
+foreach ($project in $projectsResponse.value) {
+    Write-Host "Processing project: $($project.name)"
+
+    # Get all service connections for the current project
+    $serviceConnectionsApiUrl = "$($project.url)/_apis/serviceendpoint/endpoints?api-version=7.1-preview.4"
+    $serviceConnectionsResponse = Invoke-RestMethod -Uri $serviceConnectionsApiUrl -Headers $headers -Method Get
+
+    # Find the specific service connection by name
+    $serviceConnectionToUpdate = $serviceConnectionsResponse.value | Where-Object { $_.name -eq $serviceConnectionName }
+
+    if ($null -ne $serviceConnectionToUpdate) {
+        Write-Host "  -> Found service connection: $($serviceConnectionToUpdate.name) with ID $($serviceConnectionToUpdate.id)"
+        
+        # ----------------------------------------------------
+        # Step 5: Update the service connection
+        # ----------------------------------------------------
+        
+        # The body needs to be the full JSON object of the service connection, but with the updated key
+        # You need to retrieve the service connection details first to get the full JSON payload
+        $serviceConnectionDetailsApiUrl = "$($project.url)/_apis/serviceendpoint/endpoints/$($serviceConnectionToUpdate.id)?api-version=7.1-preview.4"
+        $serviceConnectionPayload = Invoke-RestMethod -Uri $serviceConnectionDetailsApiUrl -Headers $headers -Method Get
+
+        # Modify the authorization part of the payload with the new key
+        $serviceConnectionPayload.authorization.parameters.serviceprincipalkey = $newServicePrincipalKey
+        
+        # Send the PUT request to update the service connection
+        $updateApiUrl = "$($project.url)/_apis/serviceendpoint/endpoints/$($serviceConnectionToUpdate.id)?api-version=7.1-preview.4"
+        $updateResponse = Invoke-RestMethod -Uri $updateApiUrl -Headers $headers -Method Put -Body ($serviceConnectionPayload | ConvertTo-Json -Depth 10)
+
+        Write-Host "  -> Service connection updated successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "  -> Service connection '$serviceConnectionName' not found in this project. Skipping." -ForegroundColor Yellow
+    }
+}
+
+Write-Host "Script execution complete."
+
